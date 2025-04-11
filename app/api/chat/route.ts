@@ -1,5 +1,4 @@
 import { model, modelID } from "@/ai/providers";
-import { weatherTool } from "@/ai/tools";
 import { streamText, UIMessage } from "ai";
 
 // Allow streaming responses up to 30 seconds
@@ -11,13 +10,30 @@ export async function POST(req: Request) {
     selectedModel,
   }: { messages: UIMessage[]; selectedModel: modelID } = await req.json();
 
+  // If `selectedModel` is somehow undefined or invalid, we can fallback to a default
+  const modelToUse = selectedModel ?? "llama-3.3-70b-versatile";
+
+  // System message instructing no function calls or tool usage:
+  const systemPrompt = `
+You are a straightforward text assistant for the Prince Wako Foundation.
+Do not call any tools or produce function-calling placeholders.
+Only provide direct text answers in normal conversation.
+`;
+
   const result = streamText({
-    model: model.languageModel(selectedModel),
-    system: "You are a helpful assistant.",
+    // Use a valid model or fallback
+    model: model.languageModel(modelToUse),
+
+    // Combine your system prompt with the fallback if you like
+    system: systemPrompt,
+
+    // The user's conversation
     messages,
-    tools: {
-      getWeather: weatherTool,
-    },
+
+    // Remove or disable tools to prevent function-calling tokens
+    tools: {},
+
+    // Telemetry is optional
     experimental_telemetry: {
       isEnabled: true,
     },

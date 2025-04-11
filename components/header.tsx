@@ -1,63 +1,74 @@
-import Link from "next/link";
-import { DeployButton } from "./deploy-button";
-import { GroqIcon } from "./icons";
+"use client";
 
-export const Header = () => {
+import { ChangeEvent } from "react";
+import { ModeType, ProjectType } from "./wakoData";
+
+interface HeaderProps {
+  foundationMode: ModeType;
+  setFoundationMode: (mode: ModeType) => void;
+  foundationProject: ProjectType;
+  setFoundationProject: (project: ProjectType) => void;
+  modes: Record<string, { label: string }>;
+  projects: Record<string, { label: string; summary: string }>;
+}
+
+export function Header({
+  foundationMode,
+  setFoundationMode,
+  foundationProject,
+  setFoundationProject,
+  modes,
+  projects,
+}: HeaderProps) {
   return (
-    <div className="fixed right-0 left-0 w-full top-0 bg-white dark:bg-zinc-950">
-      <div className="flex justify-between items-center p-4">
-        <div className="flex flex-row items-center gap-2 shrink-0 ">
-          <span className="jsx-e3e12cc6f9ad5a71 flex flex-row items-center gap-2 home-links">
-            <Link
-              className="text-zinc-800 dark:text-zinc-100 -translate-y-[.5px]"
-              rel="noopener"
-              target="_blank"
-              href="https://vercel.com/"
-            >
-              <svg
-                data-testid="geist-icon"
-                height={18}
-                strokeLinejoin="round"
-                viewBox="0 0 16 16"
-                width={18}
-                style={{ color: "currentcolor" }}
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M8 1L16 15H0L8 1Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </Link>
-            <div className="jsx-e3e12cc6f9ad5a71 w-4 text-lg text-center text-zinc-300 dark:text-zinc-600">
-              <svg
-                data-testid="geist-icon"
-                height={16}
-                strokeLinejoin="round"
-                viewBox="0 0 16 16"
-                width={16}
-                style={{ color: "currentcolor" }}
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M4.01526 15.3939L4.3107 14.7046L10.3107 0.704556L10.6061 0.0151978L11.9849 0.606077L11.6894 1.29544L5.68942 15.2954L5.39398 15.9848L4.01526 15.3939Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <div className="jsx-e3e12cc6f9ad5a71 flex flex-row items-center gap-4">
-              <Link className="flex flex-row items-end gap-2" target="_blank" href="https://groq.com">
-                <GroqIcon size={32} />
-              </Link>
-            </div>
-          </span>
+    <header className="sticky top-0 z-10 bg-white shadow-sm px-6 py-3 flex items-center justify-between">
+      {/* Title on the left */}
+      <h1 className="text-gray-800 text-xl sm:text-2xl font-bold">
+        Prince Wako Foundation Assistant
+      </h1>
+
+      {/* Dropdowns on the right */}
+      <div className="flex items-center gap-8">
+        {/* Content Mode */}
+        <div className="flex flex-col">
+          <label className="text-xs font-semibold text-gray-600 mb-1">
+            Content Mode
+          </label>
+          <select
+            className="border border-gray-300 rounded px-2 py-1 text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            value={foundationMode}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setFoundationMode(e.target.value as ModeType)
+            }
+          >
+            {Object.entries(modes).map(([key, val]) => (
+              <option key={key} value={key}>
+                {val.label}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="flex flex-row items-center gap-2 shrink-0">
-          <DeployButton />
+
+        {/* Project */}
+        <div className="flex flex-col">
+          <label className="text-xs font-semibold text-gray-600 mb-1">
+            Project
+          </label>
+          <select
+            className="border border-gray-300 rounded px-2 py-1 text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            value={foundationProject}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setFoundationProject(e.target.value as ProjectType)
+            }
+          >
+            {Object.entries(projects).map(([key, val]) => (
+              <option key={key} value={key}>
+                {val.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-    </div>
+    </header>
   );
-};
+}
