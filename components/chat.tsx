@@ -22,9 +22,9 @@ import { Messages } from "./messages";
 import { ProjectOverview } from "./project-overview";
 import { Textarea } from "./textarea";
 
-/** 
+/**
  * A final Chat.tsx that compiles with no TS errors,
- * referencing your Wako data from `@/lib/wakoData`.
+ * referencing your Wako data from `./wakoData`.
  */
 export default function Chat() {
   // The user's chosen model
@@ -40,42 +40,26 @@ export default function Chat() {
     messages,
     input,
     handleInputChange,
-    handleSubmit: originalHandleSubmit,
+    handleSubmit,
     status,
     stop,
-    setMessages,
   } = useChat({
     maxSteps: 5,
-    body: { selectedModel },
+    body: { 
+      selectedModel,
+      system: generateSystemPrompt(foundationMode, foundationProject)
+    },
     onError: (error) => {
       toast.error(error.message || "An error occurred", {
         position: "top-center",
         richColors: true,
       });
     },
+    key: `${foundationMode}-${foundationProject}`, // Re-mount when mode or project changes
   });
 
   // Check if the AI is currently streaming
   const isLoading = status === "streaming" || status === "submitted";
-
-  /** 
-   * Intercept form submission to prepend a system message 
-   * (based on the user's chosen mode/project).
-   */
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    // 1) Generate system message
-    const systemMsg = {
-      id: Date.now().toString(),
-      role: "system" as const,
-      content: generateSystemPrompt(foundationMode, foundationProject),
-    };
-
-    // 2) Insert system message, then proceed with normal submission
-    setMessages((prev) => [systemMsg, ...prev]);
-    originalHandleSubmit(e);
-  }
 
   return (
     <div className="h-dvh flex flex-col w-full">
@@ -110,7 +94,7 @@ export default function Chat() {
         The input form pinned at the bottom 
       */}
       <form
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         className="bg-white dark:bg-black w-full max-w-xl mx-auto px-4 sm:px-0 pb-8"
       >
         <Textarea
