@@ -5,8 +5,7 @@ export const ProjectOverview = () => {
       <p className="text-center max-w-xl">
         Welcome to the Prince Wako Foundation&apos;s AI Chatbot! This assistant
         helps you explore our initiatives, generate content, and learn more about our
-        mission to support communities with better access to clean water, education, and
-        opportunity.
+        missions. 
       </p>
     </div>
   );
